@@ -1,0 +1,6 @@
+vim-gtk3
+texlive-full
+nodejs
+npm
+ripgrep
+fzf

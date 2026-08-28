@@ -1,0 +1,6 @@
+cask "macvim"
+cask "mactex-no-gui"
+brew "node"
+brew "yarn"
+brew "ripgrep"
+brew "fzf"

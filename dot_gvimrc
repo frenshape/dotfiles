@@ -1,0 +1,13 @@
+" ~/.gvimrc — GUI-only settings (MacVim / gVim), managed by chezmoi
+
+if has('gui_macvim')
+  set guifont=Menlo:h13
+elseif has('gui_win32')
+  set guifont=Consolas:h11
+else
+  set guifont=Monospace\ 11
+endif
+
+set guioptions-=T   " no toolbar
+set guioptions-=r   " no right scrollbar
+set guioptions-=L   " no left scrollbar
