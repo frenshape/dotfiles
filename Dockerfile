@@ -32,7 +32,12 @@ ENV PATH="/home/tester/bin:${PATH}"
 #   docker build --build-arg DOTFILES_REPO=... -t dotfiles-test .
 ARG DOTFILES_REPO=https://github.com/frenshape/dotfiles.git
 
+# Which profile to test — "full" or "minimal". Prompts don't work in a
+# non-interactive docker build, so this is passed explicitly instead:
+#   docker build --build-arg PROFILE=minimal -t dotfiles-test-minimal .
+ARG PROFILE=full
+
 # The real end-to-end test: exactly what a new machine would run.
-RUN chezmoi init --apply "${DOTFILES_REPO}"
+RUN chezmoi init --apply --promptString profile="${PROFILE}" "${DOTFILES_REPO}"
 
 CMD ["/bin/bash", "-l"]
