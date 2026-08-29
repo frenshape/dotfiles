@@ -3,8 +3,10 @@
 set -euo pipefail
 
 sudo apt update
-xargs -a "$HOME/.apt-packages.txt" sudo apt install -y
-sudo usermod -aG docker "$USER"   # takes effect on next login
+xargs -a "$HOME/.apt-packages.txt" sudo env DEBIAN_FRONTEND=noninteractive apt install -y
+
+{{- if eq .profile "full" }}
+sudo usermod -aG docker "$(whoami)"   # takes effect on next login
 
 corepack enable
 corepack prepare yarn@stable --activate
@@ -12,7 +14,7 @@ corepack prepare yarn@stable --activate
 # micromamba — single binary, no bundled base env, replaces the old
 # Miniforge install for a lighter footprint.
 if ! command -v micromamba &>/dev/null; then
-  "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+  bash <(curl -L micro.mamba.pm/install.sh)
 fi
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 if micromamba env list 2>/dev/null | grep -q '^work'; then
@@ -20,6 +22,7 @@ if micromamba env list 2>/dev/null | grep -q '^work'; then
 else
   micromamba create -y -n work -f "$HOME/environment.yml"
 fi
+{{- end }}
 
 mkdir -p ~/.vim/autoload
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
