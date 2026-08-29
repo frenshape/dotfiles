@@ -1,2 +1,6 @@
+{{- $profile := env "CHEZMOI_PROFILE" -}}
+{{- if not $profile -}}
+{{- $profile = promptStringOnce . "profile" "Setup profile (full/minimal)" "full" -}}
+{{- end -}}
 [data]
-    profile = {{ promptStringOnce . "profile" "Setup profile (full/minimal)" "full" | quote }}
+    profile = {{ $profile | quote }}
