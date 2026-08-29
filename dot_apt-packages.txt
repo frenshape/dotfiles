@@ -4,3 +4,4 @@ nodejs
 npm
 ripgrep
 fzf
+docker.io

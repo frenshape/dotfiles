@@ -1,0 +1,25 @@
+{{ if eq .chezmoi.os "darwin" -}}
+#!/bin/bash
+set -euo pipefail
+
+if ! command -v brew &>/dev/null; then
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
+brew bundle --file="$HOME/.Brewfile"
+
+# micromamba — single binary, no bundled base env, replaces the old
+# miniforge cask install for a lighter footprint.
+export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+if micromamba env list 2>/dev/null | grep -q '^work'; then
+  micromamba install -y -n work -f "$HOME/environment.yml"
+else
+  micromamba create -y -n work -f "$HOME/environment.yml"
+fi
+
+mkdir -p ~/.vim/autoload
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+vim +PlugInstall +qall
+{{ end -}}

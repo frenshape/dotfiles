@@ -1,0 +1,38 @@
+# Simulates a fresh Linux machine restoring your environment from scratch.
+# Build:
+#   docker build -t dotfiles-test .
+# Run:
+#   docker run -it dotfiles-test
+#
+# Note: this only exercises the Linux code path (run_onchange_linux-*.sh).
+# It's still useful for catching syntax errors, missing packages, and
+# whether the environment.yml solves cleanly — but it can't test the
+# macOS/Windows branches of your vimrc or scripts.
+
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        curl git sudo ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Non-root user so `sudo` in the install scripts behaves like it would
+# on a real machine, instead of silently being root already.
+RUN useradd -m -s /bin/bash tester \
+    && echo "tester ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+USER tester
+WORKDIR /home/tester
+ENV HOME=/home/tester
+
+RUN sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "$HOME/bin"
+ENV PATH="/home/tester/bin:${PATH}"
+
+# Point this at your repo. Override at build time to test a branch/fork:
+#   docker build --build-arg DOTFILES_REPO=... -t dotfiles-test .
+ARG DOTFILES_REPO=https://github.com/frenshape/dotfiles.git
+
+# The real end-to-end test: exactly what a new machine would run.
+RUN chezmoi init --apply "${DOTFILES_REPO}"
+
+CMD ["/bin/bash", "-l"]

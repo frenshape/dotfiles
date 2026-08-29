@@ -1,0 +1,29 @@
+{{ if eq .chezmoi.os "linux" -}}
+#!/bin/bash
+set -euo pipefail
+
+sudo apt update
+xargs -a "$HOME/.apt-packages.txt" sudo apt install -y
+sudo usermod -aG docker "$USER"   # takes effect on next login
+
+corepack enable
+corepack prepare yarn@stable --activate
+
+# micromamba — single binary, no bundled base env, replaces the old
+# Miniforge install for a lighter footprint.
+if ! command -v micromamba &>/dev/null; then
+  "${SHELL}" <(curl -L micro.mamba.pm/install.sh)
+fi
+export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+if micromamba env list 2>/dev/null | grep -q '^work'; then
+  micromamba install -y -n work -f "$HOME/environment.yml"
+else
+  micromamba create -y -n work -f "$HOME/environment.yml"
+fi
+
+mkdir -p ~/.vim/autoload
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+vim +PlugInstall +qall
+{{ end -}}

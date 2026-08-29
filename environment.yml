@@ -1,0 +1,17 @@
+# ~/environment.yml — managed by chezmoi
+# Regenerate the package list (not this header) with:
+#   mamba env export --from-history > environment.yml
+# --from-history only records what you explicitly installed, not every
+# resolved sub-dependency — that's what keeps this portable across OSes.
+
+name: work
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - jupyterlab
+  - ipykernel

@@ -1,0 +1,31 @@
+{{ if eq .chezmoi.os "windows" -}}
+$packages = @(
+    "vim.vim",
+    "MiKTeX.MiKTeX",
+    "OpenJS.NodeJS",
+    "Yarn.Yarn",
+    "BurntSushi.ripgrep.MSVC",
+    "junegunn.fzf",
+    "Docker.DockerDesktop"
+)
+foreach ($pkg in $packages) {
+    winget install --id $pkg --accept-package-agreements --accept-source-agreements -e
+}
+
+# micromamba — single binary, no bundled base env, replaces the old
+# Miniforge install for a lighter footprint.
+winget install --id Mamba.Micromamba --accept-package-agreements --accept-source-agreements -e
+$env:MAMBA_ROOT_PREFIX = "$env:USERPROFILE\micromamba"
+$existing = & micromamba env list 2>$null | Select-String '^work'
+if ($existing) {
+    micromamba install -y -n work -f "$env:USERPROFILE\environment.yml"
+} else {
+    micromamba create -y -n work -f "$env:USERPROFILE\environment.yml"
+}
+
+$plugDir = "$env:USERPROFILE\vimfiles\autoload"
+New-Item -ItemType Directory -Force -Path $plugDir | Out-Null
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim" -OutFile "$plugDir\plug.vim"
+
+vim +PlugInstall +qall
+{{ end -}}
