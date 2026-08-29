@@ -32,12 +32,15 @@ ENV PATH="/home/tester/bin:${PATH}"
 #   docker build --build-arg DOTFILES_REPO=... -t dotfiles-test .
 ARG DOTFILES_REPO=https://github.com/frenshape/dotfiles.git
 
-# Which profile to test — "full" or "minimal". Prompts don't work in a
-# non-interactive docker build, so this is passed explicitly instead:
+# Which profile to test — "full" or "minimal". Set as an env var, not a
+# chezmoi flag: promptStringOnce currently ignores --promptString in
+# non-interactive contexts (see chezmoi issues #3345, #3834), so we bypass
+# the prompt entirely by having .chezmoi.toml.tmpl check this env var first.
 #   docker build --build-arg PROFILE=minimal -t dotfiles-test-minimal .
 ARG PROFILE=full
+ENV CHEZMOI_PROFILE=${PROFILE}
 
 # The real end-to-end test: exactly what a new machine would run.
-RUN chezmoi init --apply --promptString profile="${PROFILE}" "${DOTFILES_REPO}"
+RUN chezmoi init --apply "${DOTFILES_REPO}"
 
 CMD ["/bin/bash", "-l"]
