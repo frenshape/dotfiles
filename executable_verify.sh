@@ -11,15 +11,15 @@ echo "== chezmoi state =="
 if [ -z "$(chezmoi diff 2>/dev/null)" ]; then pass "no drift from source"; else fail "chezmoi diff is non-empty"; fi
 
 echo "== core tools on PATH =="
-for cmd in vim git latexmk node yarn rg fzf mamba; do
+export PATH="$HOME/.local/bin:$PATH"
+for cmd in vim git latexmk node yarn rg fzf micromamba; do
     if command -v "$cmd" &>/dev/null; then pass "$cmd found ($(command -v $cmd))"; else fail "$cmd NOT found"; fi
 done
 
-echo "== mamba environment =="
-if command -v mamba &>/dev/null; then
-    source "$HOME/miniforge3/etc/profile.d/conda.sh" 2>/dev/null || \
-        source /opt/homebrew/Caskroom/miniforge/base/etc/profile.d/conda.sh 2>/dev/null
-    if mamba env list | grep -q '^work'; then pass "'work' env exists"; else fail "'work' env not found"; fi
+echo "== micromamba environment =="
+if command -v micromamba &>/dev/null; then
+    export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+    if micromamba env list 2>/dev/null | grep -q '^work'; then pass "'work' env exists"; else fail "'work' env not found"; fi
 fi
 
 echo "== vim plugins =="
