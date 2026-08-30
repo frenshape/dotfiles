@@ -1,5 +1,7 @@
 {{ if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
+# vimrc hash (forces this script to re-run whenever plugins change):
+# {{ include "dot_vimrc.tmpl" | sha256sum }}
 set -euo pipefail
 
 if ! command -v brew &>/dev/null; then
