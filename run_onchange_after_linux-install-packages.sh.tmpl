@@ -8,6 +8,7 @@ xargs -a "$HOME/.apt-packages.txt" sudo env DEBIAN_FRONTEND=noninteractive apt i
 {{- if eq .profile "full" }}
 sudo usermod -aG docker "$(whoami)"   # takes effect on next login
 
+command -v corepack &>/dev/null || sudo npm install -g corepack
 corepack enable
 corepack prepare yarn@stable --activate
 
