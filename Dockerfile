@@ -40,6 +40,12 @@ ARG DOTFILES_REPO=https://github.com/frenshape/dotfiles.git
 ARG PROFILE=full
 ENV CHEZMOI_PROFILE=${PROFILE}
 
+# Forces the layer below to re-run even when nothing else in this
+# Dockerfile changed — pass a fresh value (e.g. a timestamp) so Docker
+# can't reuse a stale cached clone of your repo:
+#   docker build --build-arg CACHEBUST=$(date +%s) -t dotfiles-test .
+ARG CACHEBUST=1
+
 # The real end-to-end test: exactly what a new machine would run.
 RUN chezmoi init --apply "${DOTFILES_REPO}"
 
