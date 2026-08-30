@@ -10,6 +10,15 @@ Plug 'davidhalter/jedi-vim'
 Plug 'vim-python/python-syntax'
 Plug 'dense-analysis/ale'
 Plug 'preservim/nerdtree'
+Plug 'tpope/vim-fugitive'
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'Vimjas/vim-python-pep8-indent'
+Plug 'dhruvasagar/vim-table-mode'
+Plug 'editorconfig/editorconfig-vim'
 {{- if eq .profile "full" }}
 Plug 'lervag/vimtex',                { 'tag': 'v2.18' }
 {{- end }}
@@ -35,6 +44,22 @@ let g:vim_markdown_folding_disabled = 1
 
 " --- NERDTree ---
 nnoremap <C-n> :NERDTreeToggle<CR>
+
+" --- fzf.vim (uses the system fzf binary, installed via package manager) ---
+nnoremap <C-p> :Files<CR>
+nnoremap <leader>g :Rg<CR>
+nnoremap <leader>b :Buffers<CR>
+
+" --- vim-fugitive ---
+nnoremap <leader>gs :Git<CR>
+nnoremap <leader>gd :Gdiffsplit<CR>
+
+" --- vim-airline ---
+let g:airline#extensions#ale#enabled = 1
+set laststatus=2
+
+" --- vim-table-mode (pipe-style tables to match Markdown, not org-mode) ---
+let g:table_mode_corner = '|'
 
 " --- LaTeX (vimtex) ---
 {{- if eq .profile "full" }}
