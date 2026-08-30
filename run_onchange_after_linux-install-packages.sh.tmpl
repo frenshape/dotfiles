@@ -21,7 +21,7 @@ fi
 # shells source — this script's shell needs the binary on PATH directly.
 export PATH="$HOME/.local/bin:$PATH"
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-if micromamba env list 2>/dev/null | grep -q '^work'; then
+if micromamba env list 2>/dev/null | grep -qw work; then
   micromamba install -y -n work -f "$HOME/environment.yml"
 else
   micromamba create -y -n work -f "$HOME/environment.yml"

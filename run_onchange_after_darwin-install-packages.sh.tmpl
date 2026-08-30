@@ -11,7 +11,7 @@ brew bundle --file="$HOME/.Brewfile"
 # micromamba — single binary, no bundled base env, replaces the old
 # miniforge cask install for a lighter footprint.
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-if micromamba env list 2>/dev/null | grep -q '^work'; then
+if micromamba env list 2>/dev/null | grep -qw work; then
   micromamba install -y -n work -f "$HOME/environment.yml"
 else
   micromamba create -y -n work -f "$HOME/environment.yml"

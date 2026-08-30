@@ -19,7 +19,7 @@ done
 echo "== micromamba environment =="
 if command -v micromamba &>/dev/null; then
     export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-    if micromamba env list 2>/dev/null | grep -q '^work'; then pass "'work' env exists"; else fail "'work' env not found"; fi
+    if micromamba env list 2>/dev/null | grep -qw work; then pass "'work' env exists"; else fail "'work' env not found"; fi
 fi
 
 echo "== vim plugins =="
