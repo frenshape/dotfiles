@@ -24,4 +24,12 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
   https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 vim +PlugInstall +qall
+
+# markdown-preview.nvim's own build step only runs on vim-plug's initial
+# clone, not on repeat :PlugInstall runs — so if it ever fails once, it
+# stays broken forever unless checked explicitly like this.
+MDP_APP="$HOME/.vim/plugged/markdown-preview.nvim/app"
+if [ -d "$MDP_APP" ] && [ ! -d "$MDP_APP/node_modules" ] && command -v yarn &>/dev/null; then
+  (cd "$MDP_APP" && yarn install)
+fi
 {{ end -}}
