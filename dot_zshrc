@@ -6,13 +6,6 @@ export PATH="/Library/TeX/texbin:$PATH"
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 eval "$(micromamba shell hook --shell zsh)"
 
-if [ -f "/Users/mreeves/miniforge3/etc/profile.d/mamba.sh" ]; then
-    . "/Users/mreeves/miniforge3/etc/profile.d/mamba.sh"
-fi
-# <<< conda initialize <<<
-
-
 . "$HOME/.local/bin/env"
 
 export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-
