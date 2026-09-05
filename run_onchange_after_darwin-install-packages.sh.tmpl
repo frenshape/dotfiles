@@ -14,14 +14,15 @@ brew bundle --file="$HOME/.Brewfile"
 # from any project virtualenv or the micromamba `work` env.
 uv tool install pre-commit
 
-# micromamba — single binary, no bundled base env, replaces the old
-# miniforge cask install for a lighter footprint.
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+
+{{- if eq .profile "full" }}
 if micromamba env list 2>/dev/null | grep -qw work; then
   micromamba install -y -n work -f "$HOME/environment.yml"
 else
   micromamba create -y -n work -f "$HOME/environment.yml"
 fi
+{{- end }}
 
 mkdir -p ~/.vim/autoload
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \

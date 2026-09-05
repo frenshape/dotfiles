@@ -1,13 +1,17 @@
 {{ if eq .chezmoi.os "windows" -}}
 $packages = @(
     "vim.vim",
+    "BurntSushi.ripgrep.MSVC",
+    "junegunn.fzf"
+)
+{{- if eq .profile "full" }}
+$packages += @(
     "MiKTeX.MiKTeX",
     "OpenJS.NodeJS",
     "Yarn.Yarn",
-    "BurntSushi.ripgrep.MSVC",
-    "junegunn.fzf",
     "Docker.DockerDesktop"
 )
+{{- end }}
 foreach ($pkg in $packages) {
     winget install --id $pkg --accept-package-agreements --accept-source-agreements -e
 }
@@ -24,16 +28,19 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";
             [System.Environment]::GetEnvironmentVariable("Path", "User")
 uv tool install pre-commit
 
-# micromamba — single binary, no bundled base env, replaces the old
-# Miniforge install for a lighter footprint.
+# micromamba — installed in both profiles so it's ready to use; the
+# heavier scipy/Jupyter `work` env (below) is still full-profile-only.
 winget install --id Mamba.Micromamba --accept-package-agreements --accept-source-agreements -e
 $env:MAMBA_ROOT_PREFIX = "$env:USERPROFILE\micromamba"
+
+{{- if eq .profile "full" }}
 $existing = & micromamba env list 2>$null | Select-String '\bwork\b'
 if ($existing) {
     micromamba install -y -n work -f "$env:USERPROFILE\environment.yml"
 } else {
     micromamba create -y -n work -f "$env:USERPROFILE\environment.yml"
 }
+{{- end }}
 
 $plugDir = "$env:USERPROFILE\vimfiles\autoload"
 New-Item -ItemType Directory -Force -Path $plugDir | Out-Null

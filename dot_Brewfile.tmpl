@@ -1,0 +1,11 @@
+cask "macvim-app"
+brew "ripgrep"
+brew "fzf"
+brew "uv"
+brew "micromamba"
+{{- if eq .profile "full" }}
+cask "mactex-no-gui"
+cask "docker-desktop"
+brew "node"
+brew "yarn"
+{{- end }}

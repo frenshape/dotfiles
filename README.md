@@ -31,8 +31,11 @@ CHEZMOI_PROFILE=minimal chezmoi init --apply https://github.com/frenshape/dotfil
 | Vim + plugins | yes | yes |
 | LaTeX (MacTeX/TeXLive/MiKTeX) | yes | no |
 | Node/yarn, Docker | yes | no |
-| micromamba + scipy/Jupyter env | yes | no |
+| micromamba (tool) | yes | yes |
+| scipy/Jupyter `work` env | yes | no |
 | uv + pre-commit | yes | yes |
+
+All three platforms (macOS, Linux, Windows) implement this split identically.
 
 ## Repo layout / chezmoi naming conventions
 
@@ -66,11 +69,6 @@ docker run -it dotfiles-test
 ./verify.sh
 ```
 Test the minimal profile: add `--build-arg PROFILE=minimal`.
-```bash
-docker build --build-arg CACHEBUST=$(date +%s) -t dotfiles-test . --build-arg PROFILE=minimal
-docker run -it dotfiles-test
-./verify.sh
-```
 
 This only exercises the **Linux** code path — it's still useful for
 catching script bugs and confirming `environment.yml` solves cleanly, but
@@ -127,7 +125,7 @@ Learned the hard way — worth reading before debugging blind:
 - **Vim plugin** → add a `Plug` line in `dot_vimrc.tmpl`. Wrap it in
   `{{- if eq .profile "full" }}...{{- end }}` if it's a heavy/optional
   dependency.
-- **macOS package** → `dot_Brewfile`
+- **macOS package** → `dot_Brewfile.tmpl` (respects the profile split)
 - **Linux package** → `dot_apt-packages.txt.tmpl` (respects the profile split)
 - **Windows package** → the `$packages` array in
   `run_onchange_after_windows-install-packages.ps1.tmpl`
