@@ -10,16 +10,28 @@ FAILED=0
 echo "== chezmoi state =="
 if [ -z "$(chezmoi diff 2>/dev/null)" ]; then pass "no drift from source"; else fail "chezmoi diff is non-empty"; fi
 
-echo "== core tools on PATH =="
+PROFILE=$(chezmoi data --format json 2>/dev/null | grep -o '"profile":"[^"]*"' | cut -d'"' -f4)
+echo "== profile: ${PROFILE:-unknown} =="
+
+echo "== tools present in every profile =="
 export PATH="$HOME/.local/bin:$PATH"
-for cmd in vim git latexmk node yarn rg fzf micromamba; do
+for cmd in vim git rg fzf uv pre-commit; do
     if command -v "$cmd" &>/dev/null; then pass "$cmd found ($(command -v $cmd))"; else fail "$cmd NOT found"; fi
 done
 
-echo "== micromamba environment =="
-if command -v micromamba &>/dev/null; then
-    export MAMBA_ROOT_PREFIX="$HOME/micromamba"
-    if micromamba env list 2>/dev/null | grep -qw work; then pass "'work' env exists"; else fail "'work' env not found"; fi
+if [ "$PROFILE" = "full" ]; then
+    echo "== full-profile-only tools =="
+    for cmd in latexmk node yarn micromamba; do
+        if command -v "$cmd" &>/dev/null; then pass "$cmd found ($(command -v $cmd))"; else fail "$cmd NOT found"; fi
+    done
+
+    echo "== micromamba environment =="
+    if command -v micromamba &>/dev/null; then
+        export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+        if micromamba env list 2>/dev/null | grep -qw work; then pass "'work' env exists"; else fail "'work' env not found"; fi
+    fi
+else
+    echo "== full-profile-only tools (skipped — profile is '$PROFILE') =="
 fi
 
 echo "== vim plugins =="
