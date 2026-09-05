@@ -32,6 +32,7 @@ CHEZMOI_PROFILE=minimal chezmoi init --apply https://github.com/frenshape/dotfil
 | LaTeX (MacTeX/TeXLive/MiKTeX) | yes | no |
 | Node/yarn, Docker | yes | no |
 | micromamba + scipy/Jupyter env | yes | no |
+| uv + pre-commit | yes | yes |
 
 ## Repo layout / chezmoi naming conventions
 
@@ -65,6 +66,11 @@ docker run -it dotfiles-test
 ./verify.sh
 ```
 Test the minimal profile: add `--build-arg PROFILE=minimal`.
+```bash
+docker build --build-arg CACHEBUST=$(date +%s) -t dotfiles-test . --build-arg PROFILE=minimal
+docker run -it dotfiles-test
+./verify.sh
+```
 
 This only exercises the **Linux** code path — it's still useful for
 catching script bugs and confirming `environment.yml` solves cleanly, but
@@ -108,6 +114,13 @@ Learned the hard way — worth reading before debugging blind:
    contexts** (open chezmoi issues #3345, #3834). `.chezmoi.toml.tmpl`
    checks a `CHEZMOI_PROFILE` env var first, falling back to the prompt,
    specifically to work around this in Docker builds.
+10. **A package manager's own PATH registration isn't always visible
+    within the same script session that just ran it.** This bit us with
+    `.bashrc`/`.zshrc` (only sourced by interactive shells) and, on
+    Windows, with winget writing to the registry rather than the current
+    process's environment. The Windows script explicitly re-reads
+    `Machine`/`User` PATH from the registry after each winget install
+    that a later step depends on, rather than assuming it's already live.
 
 ## Adding something new
 
@@ -118,6 +131,11 @@ Learned the hard way — worth reading before debugging blind:
 - **Linux package** → `dot_apt-packages.txt.tmpl` (respects the profile split)
 - **Windows package** → the `$packages` array in
   `run_onchange_after_windows-install-packages.ps1.tmpl`
+- **Global CLI tool** (e.g. `pre-commit`) → `uv tool install <name>` in
+  each OS script, rather than a per-OS package manifest — keeps the tool
+  isolated from any project virtualenv or the micromamba `work` env, and
+  identical across all three platforms. Make sure `uv` itself is set up
+  first (Brewfile / curl installer / winget, per OS) if it isn't already.
 
 Test in the Docker container before applying to a real machine — nearly
 every gotcha above was originally caught there first.

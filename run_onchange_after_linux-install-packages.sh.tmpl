@@ -5,6 +5,14 @@ set -euo pipefail
 sudo apt update
 xargs -a "$HOME/.apt-packages.txt" sudo env DEBIAN_FRONTEND=noninteractive apt install -y
 
+# uv + pre-commit — not an apt package, installed via the official script.
+# Available in both profiles since it's lightweight, general dev tooling.
+if ! command -v uv &>/dev/null; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+fi
+export PATH="$HOME/.local/bin:$PATH"
+uv tool install pre-commit
+
 {{- if eq .profile "full" }}
 sudo usermod -aG docker "$(whoami)"   # takes effect on next login
 

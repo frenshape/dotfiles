@@ -12,6 +12,18 @@ foreach ($pkg in $packages) {
     winget install --id $pkg --accept-package-agreements --accept-source-agreements -e
 }
 
+# Refresh PATH from the registry so packages winget just installed (and
+# their PATH registration) are visible in this same script session,
+# without needing a new shell.
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+# uv + pre-commit
+winget install --id astral-sh.uv --accept-package-agreements --accept-source-agreements -e
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + `
+            [System.Environment]::GetEnvironmentVariable("Path", "User")
+uv tool install pre-commit
+
 # micromamba — single binary, no bundled base env, replaces the old
 # Miniforge install for a lighter footprint.
 winget install --id Mamba.Micromamba --accept-package-agreements --accept-source-agreements -e

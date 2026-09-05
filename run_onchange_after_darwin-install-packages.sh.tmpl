@@ -10,6 +10,10 @@ fi
 
 brew bundle --file="$HOME/.Brewfile"
 
+# pre-commit — installed via `uv tool install`, which keeps it isolated
+# from any project virtualenv or the micromamba `work` env.
+uv tool install pre-commit
+
 # micromamba — single binary, no bundled base env, replaces the old
 # miniforge cask install for a lighter footprint.
 export MAMBA_ROOT_PREFIX="$HOME/micromamba"
