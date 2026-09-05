@@ -10,7 +10,7 @@ FAILED=0
 echo "== chezmoi state =="
 if [ -z "$(chezmoi diff 2>/dev/null)" ]; then pass "no drift from source"; else fail "chezmoi diff is non-empty"; fi
 
-PROFILE=$(chezmoi data --format json 2>/dev/null | grep -o '"profile":"[^"]*"' | cut -d'"' -f4)
+PROFILE=$(chezmoi execute-template '{{ .profile }}' 2>/dev/null)
 echo "== profile: ${PROFILE:-unknown} =="
 
 echo "== tools present in every profile =="
