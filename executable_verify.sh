@@ -15,13 +15,13 @@ echo "== profile: ${PROFILE:-unknown} =="
 
 echo "== tools present in every profile =="
 export PATH="$HOME/.local/bin:$PATH"
-for cmd in vim git rg fzf uv pre-commit; do
+for cmd in vim git rg fzf uv pre-commit micromamba; do
     if command -v "$cmd" &>/dev/null; then pass "$cmd found ($(command -v $cmd))"; else fail "$cmd NOT found"; fi
 done
 
 if [ "$PROFILE" = "full" ]; then
     echo "== full-profile-only tools =="
-    for cmd in latexmk node yarn micromamba; do
+    for cmd in latexmk node yarn; do
         if command -v "$cmd" &>/dev/null; then pass "$cmd found ($(command -v $cmd))"; else fail "$cmd NOT found"; fi
     done
 

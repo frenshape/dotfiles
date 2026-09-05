@@ -13,6 +13,14 @@ fi
 export PATH="$HOME/.local/bin:$PATH"
 uv tool install pre-commit
 
+# micromamba — single binary, no bundled base env. Installed in both
+# profiles so it's ready to use; the heavier scipy/Jupyter `work` env
+# (below) is still full-profile-only.
+if ! command -v micromamba &>/dev/null; then
+  bash <(curl -L micro.mamba.pm/install.sh)
+fi
+export MAMBA_ROOT_PREFIX="$HOME/micromamba"
+
 {{- if eq .profile "full" }}
 sudo usermod -aG docker "$(whoami)"   # takes effect on next login
 
@@ -20,15 +28,6 @@ command -v corepack &>/dev/null || sudo npm install -g corepack
 corepack enable
 corepack prepare yarn@stable --activate
 
-# micromamba — single binary, no bundled base env, replaces the old
-# Miniforge install for a lighter footprint.
-if ! command -v micromamba &>/dev/null; then
-  bash <(curl -L micro.mamba.pm/install.sh)
-fi
-# The installer wires up activation via .bashrc, which only interactive
-# shells source — this script's shell needs the binary on PATH directly.
-export PATH="$HOME/.local/bin:$PATH"
-export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 if micromamba env list 2>/dev/null | grep -qw work; then
   micromamba install -y -n work -f "$HOME/environment.yml"
 else
